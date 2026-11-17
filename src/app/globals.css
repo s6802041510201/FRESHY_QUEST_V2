@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/*
+  โทเคนสีและฟอนต์ตามคู่มือสไตล์ศิลป์ (Art Direction & Style Guide) ข้อ 2
+  กฎการใช้สี: พื้นหลังสว่าง 70% · Navy 20% · Orange ไม่เกิน 10%
+  ข้อความต้องผ่าน WCAG AA (คอนทราสต์ >= 4.5:1) จึงมีเฉดเข้ม (-strong) ไว้ใช้กับตัวอักษร:
+    - ตัวอักษรขาวบนส้มหลัก (#e8622c) = 3.38:1 ไม่ผ่าน  -> ปุ่มส้มใช้ตัวอักษรสี ink (5.18:1)
+    - ตัวอักษรส้ม/เขียว/แดงบนพื้นขาว ไม่ผ่านที่เฉดหลัก -> ใช้ orange-strong, teal-strong, red-strong
+  แก้สีทั้งเว็บได้ที่ไฟล์นี้ที่เดียว
+*/
+@theme {
+  /* สีหลักจากคู่มือ */
+  --color-navy: #1f2b5c; /* หัวข้อ แถบเมนู ปุ่มรอง */
+  --color-orange: #e8622c; /* ไฮไลต์ปุ่มที่ต้องกด (ใช้เป็นพื้นปุ่มเท่านั้น) */
+  --color-peri: #7c86e0; /* Periwinkle: ขอบ/การ์ด */
+  --color-cyan: #3fc6ff; /* Holo Cyan: เส้นกริดเรืองแสง */
+  --color-teal: #1f8a7a; /* สำเร็จ ถูกต้อง Checklist */
+  --color-red: #d64545; /* ข้อห้าม คำเตือน */
+
+  /* เฉดเข้มสำหรับตัวอักษร (ผ่าน AA บนพื้นขาว) */
+  --color-orange-strong: #c4491a;
+  --color-peri-strong: #5a63c4;
+  --color-teal-strong: #17695d;
+  --color-red-strong: #b83535;
+
+  /* พื้นผิวและตัวอักษร */
+  --color-ink: #0f1738; /* ตัวอักษรหลัก */
+  --color-canvas: #f5f7fc; /* พื้นหลังหน้า (สว่าง) */
+  --color-line: #dfe4f1; /* เส้นขอบ */
+  --color-muted: #4a5578; /* ข้อความรอง */
+
+  --font-sans: var(--font-plex), "Leelawadee UI", Tahoma, sans-serif;
+  --font-heading: var(--font-mitr), var(--font-plex), "Leelawadee UI", Tahoma, sans-serif;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* หัวข้อใช้ Mitr (ตามคู่มือ) เนื้อหาใช้ IBM Plex Sans Thai */
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  color: var(--color-navy);
+}
+
+/* กรอบโฟกัสที่เห็นชัดเมื่อใช้คีย์บอร์ด (คอนทราสต์ >= 3:1 บนพื้นขาวและพื้น Navy) */
+:focus-visible {
+  outline: 3px solid var(--color-peri-strong);
+  outline-offset: 2px;
+}
+.on-dark :focus-visible {
+  outline-color: var(--color-cyan);
+}
+
+/* ผู้ใช้ที่ตั้งค่าลดการเคลื่อนไหวในระบบ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
