@@ -37,7 +37,7 @@ export async function PUT(request: Request, { params }: Ctx) {
 
   if (profile.role === "editor" && existing.status !== "draft")
     return NextResponse.json(
-      { error: "บทบาท Editor แก้ไขได้เฉพาะสื่อที่เป็นฉบับร่าง" },
+      { error: "บทบาท Teacher แก้ไขได้เฉพาะสื่อที่เป็นฉบับร่าง" },
       { status: 403 },
     );
 
@@ -52,7 +52,7 @@ export async function PUT(request: Request, { params }: Ctx) {
     .select("id");
   if (error) {
     const m = mapDbError(error);
-    return NextResponse.json({ error: m.message }, { status: m.status });
+    return NextResponse.json({ error: m.message, field: m.field }, { status: m.status });
   }
   // RLS ปฏิเสธแบบเงียบ (ไม่ error แต่ไม่มีแถวถูกแก้) -> แจ้งว่าไม่มีสิทธิ์
   if (!data || data.length === 0)
@@ -80,7 +80,7 @@ export async function DELETE(_request: Request, { params }: Ctx) {
     .select("id");
   if (error) {
     const m = mapDbError(error);
-    return NextResponse.json({ error: m.message }, { status: m.status });
+    return NextResponse.json({ error: m.message, field: m.field }, { status: m.status });
   }
   if (!data || data.length === 0)
     return NextResponse.json({ error: "ไม่พบสื่อนี้ (อาจถูกลบไปแล้ว)" }, { status: 404 });

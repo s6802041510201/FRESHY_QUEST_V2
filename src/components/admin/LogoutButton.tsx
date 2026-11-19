@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// ปุ่มออกจากระบบ (ออกแบบให้อยู่บนพื้น Navy ของเมนูข้าง)
+// ปุ่มออกจากระบบ (อยู่บนแถบ Navy ด้านบนของหลังบ้าน)
 export default function LogoutButton() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ export default function LogoutButton() {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
     } finally {
-      router.push("/admin/login");
+      router.push("/login");
       router.refresh();
     }
   }
@@ -23,7 +23,7 @@ export default function LogoutButton() {
       type="button"
       onClick={logout}
       disabled={loading}
-      className="w-full rounded-lg border border-white/30 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 disabled:opacity-60"
+      className="inline-flex min-h-11 items-center rounded-md border border-white/40 px-4 text-sm font-medium text-white transition-colors hover:bg-white/10 disabled:opacity-60"
     >
       {loading ? "กำลังออก..." : "ออกจากระบบ"}
     </button>

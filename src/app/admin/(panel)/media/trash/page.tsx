@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AdminPageHeader from "@/components/admin/PageHeader";
 import { RestoreMediaButton } from "@/components/admin/MediaRowActions";
 import { cardClass } from "@/components/ui/styles";
 import { requirePermission } from "@/lib/auth";
@@ -22,47 +22,43 @@ export default async function TrashPage() {
     .returns<Row[]>();
 
   return (
-    <div className="space-y-4">
-      <div>
-        <Link href="/admin/media" className="text-sm text-muted hover:underline">
-          ← กลับคลังสื่อ
-        </Link>
-        <h1 className="text-3xl">ถังขยะ</h1>
-        <p className="text-sm text-muted">
-          สื่อที่ถูกลบจะไม่ปรากฏต่อนักศึกษา กู้คืนได้ที่นี่ (ไฟล์ในที่เก็บไฟล์ยังอยู่ ไม่ถูกลบ)
-        </p>
-      </div>
+    <div className="space-y-5">
+      <AdminPageHeader
+        back={{ href: "/admin/media", label: "กลับคลังสื่อ" }}
+        title="ถังขยะ"
+        description="สื่อที่ถูกลบจะไม่ปรากฏต่อนักศึกษา กู้คืนได้ที่นี่ (ไฟล์ในที่เก็บไฟล์ยังอยู่ ไม่ถูกลบ)"
+      />
 
       {error ? (
-        <p role="alert" className="rounded-lg bg-red/10 px-4 py-3 text-sm text-red-strong">
+        <p role="alert" className="rounded-lg bg-red/10 px-5 py-4 text-sm text-red-strong">
           โหลดรายการไม่สำเร็จ กรุณาลองรีเฟรชหน้า
         </p>
       ) : null}
 
       <div className={`${cardClass} overflow-x-auto`}>
         <table className="w-full min-w-[40rem] text-left text-sm">
-          <thead className="border-b border-line bg-canvas text-muted">
+          <thead className="border-b border-line bg-canvas text-left text-muted">
             <tr>
-              <th className="px-4 py-3 font-medium">ด่าน</th>
-              <th className="px-4 py-3 font-medium">ชื่อเรื่อง</th>
-              <th className="px-4 py-3 font-medium">ลบเมื่อ</th>
-              <th className="px-4 py-3" />
+              <th scope="col" className="px-5 py-3.5 font-semibold">ด่าน</th>
+              <th scope="col" className="px-5 py-3.5 font-semibold">ชื่อเรื่อง</th>
+              <th scope="col" className="px-5 py-3.5 font-semibold">ลบเมื่อ</th>
+              <th scope="col" className="px-5 py-3.5"><span className="sr-only">การจัดการ</span></th>
             </tr>
           </thead>
           <tbody>
             {(data ?? []).map((m) => (
               <tr key={m.id} className="border-b border-line last:border-0 hover:bg-canvas">
-                <td className="px-4 py-3 font-heading text-lg text-navy">{m.episode_no}</td>
-                <td className="px-4 py-3">{m.title}</td>
-                <td className="px-4 py-3 text-muted">{formatThaiDateTime(m.deleted_at)}</td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-5 py-4 font-heading text-lg text-navy">{m.episode_no}</td>
+                <td className="px-5 py-4">{m.title}</td>
+                <td className="px-5 py-4 text-muted">{formatThaiDateTime(m.deleted_at)}</td>
+                <td className="px-5 py-4 text-right">
                   <RestoreMediaButton id={m.id} />
                 </td>
               </tr>
             ))}
             {!error && (data ?? []).length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-muted">
+                <td colSpan={4} className="px-5 py-12 text-center text-muted">
                   ถังขยะว่าง
                 </td>
               </tr>

@@ -1,4 +1,4 @@
-// ตารางสิทธิ์ Admin / Editor ที่เดียว (ตามตารางสิทธิ์หน้า 8 ของเอกสารออกแบบ)
+// ตารางสิทธิ์ Admin / Editor (แสดงบนหน้าจอว่า Teacher) ที่เดียว (ตามตารางสิทธิ์หน้า 8 ของเอกสารออกแบบ)
 // ใช้ซ่อน/แสดงเมนูและตรวจใน API ทุกตัว
 // สำคัญ: นี่คือชั้นแรก ชั้นที่สองคือ RLS + trigger ใน supabase/schema.sql ซึ่งบังคับกฎเดียวกัน
 // ถ้าแก้ที่นี่ ต้องแก้ schema.sql ให้ตรงกัน
@@ -52,7 +52,7 @@ export const ROLE_PERMISSIONS: Record<RoleName, readonly Permission[]> = {
 
 export const ROLE_LABEL: Record<RoleName, string> = {
   admin: "ผู้ดูแลระบบ (Admin)",
-  editor: "ผู้จัดทำเนื้อหา (Editor)",
+  editor: "Teacher (ผู้จัดทำเนื้อหา)", // ชื่อในฐานข้อมูลยังเป็น editor แสดงเป็น Teacher เฉพาะหน้าจอ
 };
 
 export function can(role: RoleName | null | undefined, perm: Permission): boolean {

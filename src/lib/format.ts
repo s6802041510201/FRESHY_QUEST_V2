@@ -83,9 +83,33 @@ export const LIVE_STATE_LABEL: Record<LiveState, string> = {
 };
 
 export const LIVE_STATE_CLASS: Record<LiveState, string> = {
-  draft: "bg-slate-100 text-slate-700",
+  draft: "bg-tint text-muted",
   scheduled: "bg-peri/20 text-navy",
   live: "bg-teal/15 text-teal-strong",
-  expired: "bg-orange/15 text-[#8a3210]",
+  expired: "bg-orange/15 text-orange-strong",
   deleted: "bg-red/15 text-red-strong",
 };
+
+const thaiDateOnly = new Intl.DateTimeFormat("th-TH-u-ca-buddhist", {
+  timeZone: TZ,
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+/** วันที่ล้วนตามภาษาที่เลือก: ไทย = "13 พ.ย. 2569" · อังกฤษ = "13 Nov 2026" */
+export function formatDateOnly(ymd: string | null | undefined, lang: "th" | "en"): string {
+  if (lang === "th") return formatThaiDateOnly(ymd);
+  if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return "-";
+  const d = new Date(`${ymd}T12:00:00+07:00`);
+  return Number.isNaN(d.getTime())
+    ? "-"
+    : new Intl.DateTimeFormat("en-GB", { timeZone: TZ, day: "numeric", month: "short", year: "numeric" }).format(d);
+}
+
+/** "2026-11-13" (วันที่ล้วน) -> "13 พ.ย. 2569" ไม่ผ่านการแปลงเขตเวลาให้วันเพี้ยน */
+export function formatThaiDateOnly(ymd: string | null | undefined): string {
+  if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return "-";
+  const d = new Date(`${ymd}T12:00:00+07:00`);
+  return Number.isNaN(d.getTime()) ? "-" : thaiDateOnly.format(d);
+}

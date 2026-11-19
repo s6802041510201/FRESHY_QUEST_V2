@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MediaForm, { type MediaFormInitial } from "@/components/admin/MediaForm";
+import AdminPageHeader from "@/components/admin/PageHeader";
 import { DeleteMediaButton } from "@/components/admin/MediaRowActions";
+import { btnSecondary } from "@/components/ui/styles";
 import { requirePermission } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
@@ -26,25 +28,28 @@ export default async function EditMediaPage({ params }: { params: Promise<{ id: 
   const lockedForEditor = profile.role === "editor" && media.status !== "draft";
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link href="/admin/media" className="text-sm text-muted hover:underline">
-            ← กลับคลังสื่อ
-          </Link>
-          <h1 className="text-3xl">
+    <div>
+      <AdminPageHeader
+        back={{ href: "/admin/media", label: "กลับคลังสื่อ" }}
+        title={
+          <>
             ด่าน {media.episode_no}: {media.title}
-          </h1>
-        </div>
-        {can(profile.role, "media.delete") ? (
-          <DeleteMediaButton id={media.id} title={media.title} />
-        ) : null}
-      </div>
+          </>
+        }
+        actions={
+          <>
+            <Link href={`/admin/media/${media.id}/preview`} className={btnSecondary}>
+              ดูตัวอย่างหน้านักศึกษา
+            </Link>
+            {can(profile.role, "media.delete") ? <DeleteMediaButton id={media.id} title={media.title} /> : null}
+          </>
+        }
+      />
 
       {lockedForEditor || !canEdit ? (
-        <p className="rounded-lg bg-orange/15 px-4 py-3 text-sm text-ink">
+        <p className="rounded-md border border-orange/40 bg-orange/10 px-4 py-3 text-sm text-ink">
           {lockedForEditor
-            ? "สื่อนี้ตั้งเวลาหรือเผยแพร่แล้ว บทบาท Editor แก้ไขได้เฉพาะสื่อที่เป็นฉบับร่าง กรุณาแจ้งผู้ดูแลระบบ (Admin) หากต้องการแก้ไข"
+            ? "สื่อนี้ตั้งเวลาหรือเผยแพร่แล้ว บทบาท Teacher แก้ไขได้เฉพาะสื่อที่เป็นฉบับร่าง กรุณาแจ้งผู้ดูแลระบบ (Admin) หากต้องการแก้ไข"
             : "บัญชีนี้ไม่มีสิทธิ์แก้ไขสื่อ"}
         </p>
       ) : (

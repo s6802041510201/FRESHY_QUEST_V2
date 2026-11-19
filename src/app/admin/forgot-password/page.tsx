@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AuthCard, buttonClass, inputClass } from "@/components/admin/AuthCard";
+import { useI18n } from "@/lib/i18n/client";
 
 export default function ForgotPasswordPage() {
+  const { t } = useI18n();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,21 +24,21 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email: form.get("email") }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) setError(data.error ?? "ส่งคำขอไม่สำเร็จ กรุณาลองใหม่");
+      if (!res.ok) setError(data.error ?? t.auth.forgotFailed);
       else setMessage(data.message);
     } catch {
-      setError("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจอินเทอร์เน็ตแล้วลองใหม่");
+      setError(t.auth.offline);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthCard title="ลืมรหัสผ่าน" subtitle="กรอกอีเมลของบัญชี เราจะส่งลิงก์ตั้งรหัสผ่านใหม่ให้">
-      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+    <AuthCard title={t.auth.forgotTitle} subtitle={t.auth.forgotSub}>
+      <form onSubmit={onSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium">
-            อีเมล
+          <label htmlFor="email" className="mb-1.5 block text-sm font-semibold">
+            {t.auth.email}
           </label>
           <input id="email" name="email" type="email" autoComplete="username" required className={inputClass} />
         </div>
@@ -51,11 +53,11 @@ export default function ForgotPasswordPage() {
           </p>
         ) : null}
         <button type="submit" disabled={loading} className={buttonClass}>
-          {loading ? "กำลังส่ง..." : "ส่งลิงก์ตั้งรหัสผ่านใหม่"}
+          {loading ? t.auth.forgotSubmitting : t.auth.forgotSubmit}
         </button>
         <p className="text-center text-sm">
-          <Link href="/admin/login" className="font-medium text-navy underline-offset-2 hover:underline">
-            กลับไปหน้าเข้าสู่ระบบ
+          <Link href="/login" className="font-medium text-navy underline-offset-4 hover:underline">
+            {t.auth.backToLogin}
           </Link>
         </p>
       </form>

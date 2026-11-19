@@ -85,14 +85,14 @@ export function buildMediaRow(
 }
 
 /** แปลง error จาก Supabase/Postgres เป็นข้อความไทย + HTTP status */
-export function mapDbError(error: SupabaseLikeError): { message: string; status: number } {
+export function mapDbError(error: SupabaseLikeError): { message: string; status: number; field?: "episode_no" | "slug" } {
   const msg = `${error?.message ?? ""} ${error?.details ?? ""}`;
   switch (error?.code) {
     case "23505":
       if (msg.includes("media_episode_no_uq"))
-        return { message: "เลขด่านนี้ถูกใช้แล้ว กรุณาเลือกเลขอื่น", status: 409 };
+        return { message: "เลขด่านนี้ถูกใช้แล้ว กรุณาเลือกเลขอื่น", status: 409, field: "episode_no" };
       if (msg.includes("media_slug_uq"))
-        return { message: "Slug นี้ถูกใช้แล้ว กรุณาตั้งชื่อใหม่", status: 409 };
+        return { message: "Slug นี้ถูกใช้แล้ว กรุณาตั้งชื่อใหม่", status: 409, field: "slug" };
       return { message: "ข้อมูลซ้ำกับรายการที่มีอยู่", status: 409 };
     case "23514":
       if (msg.includes("media_not_draft_needs_video_ck"))
@@ -103,14 +103,30 @@ export function mapDbError(error: SupabaseLikeError): { message: string; status:
         return { message: "ต้องระบุเวลาเริ่มเผยแพร่", status: 400 };
       return { message: "ข้อมูลไม่ผ่านเงื่อนไขของระบบ กรุณาตรวจอีกครั้ง", status: 400 };
     case "42501":
-      // มาจาก trigger (Editor) หรือ RLS
-      return {
-        message: error?.message?.includes("Editor")
-          ? error.message
-          : "บัญชีนี้ไม่มีสิทธิ์ทำรายการนี้",
-        status: 403,
-      };
+      // มาจาก trigger (บทบาท editor ในฐานข้อมูล แสดงเป็น Teacher) หรือ RLS
+      // ข้อความจากฐานข้อมูลยังเขียนว่า Editor จึงแปลงเป็นข้อความที่โค้ดกำหนดเอง ไม่ส่งต่อตรง ๆ
+      if (error?.message?.includes("Editor"))
+        return {
+          message: error.message.includes("แก้ไขได้เฉพาะ")
+            ? "บทบาท Teacher แก้ไขได้เฉพาะสื่อที่เป็นฉบับร่าง"
+            : "บทบาท Teacher ไม่มีสิทธิ์เปลี่ยนสถานะ เวลาเผยแพร่ หรือลบสื่อ",
+          status: 403,
+        };
+      return { message: "บัญชีนี้ไม่มีสิทธิ์ทำรายการนี้", status: 403 };
     default:
       return { message: "บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง", status: 500 };
   }
+}
+
+/** slug ของสำเนา: "<slug>-copy", "<slug>-copy-2", ... (รูปแบบต้องผ่านกฎ slug และไม่เกิน 60 ตัวอักษร) */
+export function copySlug(slug: string, attempt: number): string {
+  const suffix = attempt <= 1 ? "-copy" : `-copy-${attempt}`;
+  const base = slug.slice(0, 60 - suffix.length).replace(/-+$/, "");
+  return `${base}${suffix}`;
+}
+
+/** ชื่อเรื่องของสำเนา เติม " (สำเนา)" และตัดส่วนหน้าให้รวมไม่เกิน 150 ตัวอักษร */
+export function copyTitle(title: string): string {
+  const tag = " (สำเนา)";
+  return `${title.slice(0, 150 - tag.length)}${tag}`;
 }
